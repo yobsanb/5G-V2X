@@ -1,0 +1,46 @@
+# D-FINE roadside detector (NMS-free real-time detection transformer).
+# Run: python tools/train_detector.py --config config/detector.yaml
+
+run:
+  name: detector
+  output_dir: outputs
+  device: auto
+  seed: 42
+
+data:
+  train_manifest: data/train.jsonl
+  val_manifest: data/val.jsonl     # or set val_fraction instead
+  root: data
+  num_classes: 7                   # background + 6 foreground classes
+  class_names: [person, bicycle, car, motorcycle, bus, truck]
+  batch_size: 4
+  num_workers: 4
+  augment:
+    horizontal_flip: 0.5
+    photometric: 0.5
+    scale_jitter: [0.8, 1.25]
+
+model:
+  name: dfine                      # or 'fasterrcnn' for the lighter torchvision baseline
+  pretrained: true                 # COCO weights; the head is re-initialised for num_classes
+  pretrained_model: ustc-community/dfine-small-coco
+  image_size: 640                  # D-FINE resizes to a square; 640 matches the released weights
+  max_detections: 300              # equals num_queries; D-FINE needs no NMS
+  freeze_backbone: false
+
+optim:
+  name: adamw
+  lr: 1.0e-4                       # transformer detectors want a lower LR than Faster R-CNN
+  weight_decay: 1.0e-4
+  clip_grad_norm: 0.1              # DETR-family training is unstable without tight clipping
+
+schedule:
+  name: cosine
+  epochs: 30
+  warmup_epochs: 2                 # matters more here than for CNN detectors
+  min_lr_factor: 0.01
+
+train:
+  amp: true                        # active on CUDA only
+  val_interval: 1
+  early_stopping_patience: 0       # 0 disables early stopping

@@ -1,0 +1,40 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+.env
+.env.*
+
+# Datasets and run artifacts. Leading slashes anchor these to the repo root so they
+# cannot swallow same-named package directories such as v2x_edge/data/.
+/data/
+/outputs/*
+!/outputs/.gitkeep
+/calibration/*.npy
+!/calibration/.gitkeep
+*.pt
+*.pth
+*.onnx
+*.mp4
+*.avi
+*.mkv
+
+# Supplier and security material
+/vendor/
+/secrets/
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Build and editor
+*.egg-info/
+build/
+dist/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

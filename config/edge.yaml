@@ -1,0 +1,51 @@
+system:
+  device: auto
+  seed: 42
+
+camera:
+  source: 0
+  width: 1280
+  height: 720
+  fps: 30
+
+perception:
+  detector:
+    backend: dfine                 # NMS-free real-time transformer; COCO weights
+    pretrained_model: ustc-community/dfine-small-coco
+    image_size: 640
+    confidence_threshold: 0.45
+    allowed_labels: [person, bicycle, car, motorcycle, bus, truck]
+    # backend: checkpoint          # a model you trained; architecture read from the file
+    # checkpoint: outputs/detector/checkpoints/best.pt
+  segmentation:
+    enabled: false
+    backend: segformer
+    pretrained_model: nvidia/segformer-b2-finetuned-cityscapes-1024-1024
+    inference_size: [1024, 512]    # [width, height] the segmenter runs at
+
+tracking:
+  iou_threshold: 0.30
+  max_age: 12
+  min_hits: 2
+
+localization:
+  homography_path: calibration/homography.npy
+
+world:
+  stale_after_seconds: 1.0
+
+risk:
+  horizon_seconds: 5.0
+  collision_distance_m: 2.5
+  minimum_relative_speed_mps: 0.25
+  max_object_age_seconds: 1.0
+  max_pair_time_skew_seconds: 0.2
+  critical_ttc_seconds: 1.5
+  warning_ttc_seconds: 3.0
+
+v2x:
+  rsu_id: RSU_001
+  transport: udp
+  host: 127.0.0.1
+  port: 5005
+  max_message_age_seconds: 1.0

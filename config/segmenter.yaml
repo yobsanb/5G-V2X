@@ -1,0 +1,54 @@
+# SegFormer road segmentation (Mix-Transformer encoder + all-MLP decoder).
+# Run: python tools/train_segmenter.py --config config/segmenter.yaml
+
+run:
+  name: segmenter
+  output_dir: outputs
+  device: auto
+  seed: 42
+
+data:
+  train_images: data/segmentation/train/images
+  train_masks: data/segmentation/train/masks
+  val_images: data/segmentation/val/images
+  val_masks: data/segmentation/val/masks
+  num_classes: 8
+  width: 1024
+  height: 512                      # SegFormer has no positional encoding, so train and
+                                   # inference resolutions may differ
+  ignore_index: 255                # excluded from loss and metrics
+  batch_size: 4
+  num_workers: 4
+  # class_weights: [...]           # one weight per class, for imbalanced data
+  augment:
+    horizontal_flip: 0.5
+    photometric: 0.5
+    scale_crop: [0.5, 2.0]         # the standard Cityscapes-style range
+
+model:
+  name: segformer                  # or 'lraspp' for the lighter torchvision baseline
+  pretrained: true
+  # Cityscapes init converges far faster than an ImageNet backbone on road scenes.
+  # NOTE: nvidia/* weights carry NVIDIA's licence (non-commercial); the architecture
+  # itself is Apache-2.0. Use 'nvidia/mit-b2' for an ImageNet backbone, or set
+  # pretrained: false to train from scratch.
+  pretrained_model: nvidia/segformer-b2-finetuned-cityscapes-1024-1024
+  freeze_encoder: false
+
+optim:
+  name: adamw
+  lr: 6.0e-5                       # the SegFormer reference LR
+  weight_decay: 0.01
+  clip_grad_norm: 1.0
+
+schedule:
+  name: cosine
+  epochs: 60
+  warmup_epochs: 2
+  min_lr_factor: 0.01
+
+train:
+  amp: true
+  val_interval: 1
+  early_stopping_patience: 10
+  label_smoothing: 0.0

@@ -1,0 +1,9 @@
+# Normalise to LF in the repository so a Windows checkout cannot commit CRLF into
+# files that run on the Linux MEC.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.npy binary
+*.pt binary
+*.onnx binary

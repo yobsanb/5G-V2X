@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "v2x-edge-system"
+version = "0.4.0"
+description = "Roadside V2X cooperative perception, training, and safety analysis"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+dependencies = [
+  "torch>=2.4",
+  "torchvision>=0.19",
+  "numpy>=1.24",
+  "opencv-python>=4.8",
+  "scipy>=1.10",
+  "PyYAML>=6.0",
+  "transformers>=4.49",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+export = ["onnx>=1.15"]
+
+[tool.setuptools.packages.find]
+include = ["v2x_edge*"]
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+addopts = "-q"
